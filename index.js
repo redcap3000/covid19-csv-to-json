@@ -12,16 +12,14 @@
 csv = require('csv-parse')
 fs = require('fs')
 covidPath = 'COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/'
-String.prototype.toProperCase = function () {
-    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-};
+covidPath2 = 'covid-19-data/'
 
-try{
-	fs.readdir(covidPath, function(err, items) {
-	    for (var i=0; i<items.length; i++) {
+
+function dirCSVtoJSON(err,items,path){
+	for (var i=0; i<items.length; i++) {
 	    	// filename check
 	    	if(items[i].split('.')[1] == 'csv'){
-				let cvsFile = fs.readFileSync(covidPath +items[i]);
+				let cvsFile = fs.readFileSync(path +items[i]);
 				if(cvsFile){
 					resultObjects = []
 					cvsFile = cvsFile.toString()
@@ -68,9 +66,20 @@ try{
 				}
 			}
 		}
-	}
-)
+}
+try{
+	fs.readdir(covidPath, function(err,items){
+		dirCSVtoJSON(err,items,covidPath)
+	})
 }catch(err){
 	console.log(err)
-	console.log("Problem with file")
+	console.log("Problem with file " + covidPath)
+}
+try{
+	fs.readdir(covidPath2, function(err,items){
+		dirCSVtoJSON(err,items,covidPath2)
+	})
+}catch(err){
+	console.log(err)
+	console.log("Problem with file " + covidPath2)
 }

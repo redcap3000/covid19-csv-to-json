@@ -12,6 +12,18 @@
 csv = require('csv-parse')
 fs = require('fs')
 covidPath = 'COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/'
+timeSeriesPath = 'COVID-19/csse_covid_19_data/csse_covid_19_time_series/'
+
+
+// archived data
+archived_daily_updatePath = 'COVID-19/archived_data/archived_daily_case_updates/'
+archived_time_seriesPath = 'COVID-19/archived_data/archived_time_series/'
+
+
+who_time_seriesPath = 'COVID-19/who_covid_19_situation_reports/who_covid_19_sit_rep_time_series/'
+
+
+// NYT Data
 covidPath2 = 'covid-19-data/'
 
 
@@ -38,7 +50,7 @@ function dirCSVtoJSON(err,items,path){
 								row.filter(function(value,order){
 									// filter out articles without a location
 									if(value != '' && typeof keys[order] != 'undefined'){
-											if(keys[order] == 'Confirmed' || keys[order] == 'Deaths' || keys[order] == 'Recovered'){
+											if(keys[order] == 'Confirmed' || keys[order] == 'Deaths' || keys[order] == 'Recovered' || keys[order] == 'Cases'){
 												// parse number
 												let numCheck = parseInt(value.trim())
 												obj[keys[order]] = (numCheck ? numCheck : value.trim())
@@ -67,19 +79,21 @@ function dirCSVtoJSON(err,items,path){
 			}
 		}
 }
-try{
-	fs.readdir(covidPath, function(err,items){
-		dirCSVtoJSON(err,items,covidPath)
-	})
-}catch(err){
-	console.log(err)
-	console.log("Problem with file " + covidPath)
-}
-try{
-	fs.readdir(covidPath2, function(err,items){
-		dirCSVtoJSON(err,items,covidPath2)
-	})
-}catch(err){
-	console.log(err)
-	console.log("Problem with file " + covidPath2)
-}
+
+[	
+	covidPath,
+	timeSeriesPath,
+	archived_daily_updatePath,
+	archived_time_seriesPath, 
+	who_time_seriesPath,
+	covidPath2
+].filter(function(path){
+	try{
+		fs.readdir(path, function(err,items){
+			dirCSVtoJSON(err,items,path)
+		})
+	}catch(err){
+		console.log('Error with ' + path)
+		console.log(err)
+	}
+})
